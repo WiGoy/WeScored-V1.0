@@ -1,0 +1,10 @@
+D:\WorkspaceNJ\Test\WhoScoredSpiderService\WhoScoredSpiderService\bin\Debug\WhoScoredSpiderService.exe.config
+D:\WorkspaceNJ\Test\WhoScoredSpiderService\WhoScoredSpiderService\obj\Debug\WhoScoredSpiderService.ProjectInstaller.resources
+D:\WorkspaceNJ\Test\WhoScoredSpiderService\WhoScoredSpiderService\obj\Debug\WhoScoredSpiderService.csproj.GenerateResource.Cache
+D:\WorkspaceNJ\Test\WhoScoredSpiderService\WhoScoredSpiderService\bin\Debug\Install.bat
+D:\WorkspaceNJ\Test\WhoScoredSpiderService\WhoScoredSpiderService\bin\Debug\Uninstall.bat
+D:\WorkspaceNJ\Test\WhoScoredSpiderService\WhoScoredSpiderService\bin\Debug\whoscoredspider.ini
+D:\WorkspaceNJ\Test\WhoScoredSpiderService\WhoScoredSpiderService\bin\Debug\WhoScoredSpiderService.exe
+D:\WorkspaceNJ\Test\WhoScoredSpiderService\WhoScoredSpiderService\bin\Debug\WhoScoredSpiderService.pdb
+D:\WorkspaceNJ\Test\WhoScoredSpiderService\WhoScoredSpiderService\obj\Debug\WhoScoredSpiderService.exe
+D:\WorkspaceNJ\Test\WhoScoredSpiderService\WhoScoredSpiderService\obj\Debug\WhoScoredSpiderService.pdb
