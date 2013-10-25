@@ -11,6 +11,7 @@ namespace WhoScoredSpiderService
         {
             ReadConfig();
             InitializeRootDir();
+            InitializeTime();
             InitializeLeagues();
         }
 
@@ -61,7 +62,7 @@ namespace WhoScoredSpiderService
             if (Globe.ConfigDic.ContainsKey(Globe.CONFIG_WORK_TIME))
             {
                 string workTime = "";
-                Globe.ConfigDic.TryGetValue(Globe.CONFIG_ROOT_DIR, out workTime);
+                Globe.ConfigDic.TryGetValue(Globe.CONFIG_WORK_TIME, out workTime);
 
                 try
                 {
@@ -91,7 +92,7 @@ namespace WhoScoredSpiderService
 
             for (int i = 0; i < temp.Length; i = i + 2)
             {
-                Globe.LeaguesDic.Add(temp[i], temp[i + 1]);
+                Globe.LeaguesDic.Add(temp[i].Trim(), temp[i + 1].Trim());
             }
         }
     }

@@ -22,7 +22,7 @@ namespace WhoScoredSpiderService
             config.GetConfiguration();
 
             Timer timer = new Timer();
-            timer.Interval = 300;
+            timer.Interval = 60000;
             timer.Elapsed += new System.Timers.ElapsedEventHandler(ChkSrv);
             timer.AutoReset = true;
             timer.Enabled = true;
@@ -39,14 +39,14 @@ namespace WhoScoredSpiderService
 
             if (iHour == Globe.WorkTime_Hour && iMinute == Globe.WorkTime_Minute)
             {
-                Globe.WriteLog("On Time Event!");
+                Globe.WriteLog("Begin downloading...");
 
                 try
                 {
                     Timer tempTimer = (Timer)source;
                     tempTimer.Enabled = false;
 
-                    SpiderSync spider = new SpiderSync();
+                    SpiderAsync spider = new SpiderAsync();
                     spider.GetAllLeagues();
 
                     tempTimer.Enabled = true;

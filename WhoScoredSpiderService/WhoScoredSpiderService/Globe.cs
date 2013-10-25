@@ -32,7 +32,7 @@ namespace WhoScoredSpiderService
             try
             {
                 StreamWriter sw = new StreamWriter(LogFile, true, Encoding.Default);
-                sw.WriteLine(txt);
+                sw.WriteLine(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") + " " + txt);
                 sw.Flush();
                 sw.Close();
             }
