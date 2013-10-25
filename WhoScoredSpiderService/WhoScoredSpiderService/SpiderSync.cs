@@ -10,7 +10,16 @@ namespace WhoScoredSpiderService
     {
         private const string LeagueHtmlContentFileName = "LiveScores.txt";
 
-        public void GetLeagueHtmlContent(string leagueName, string leagueUrl)
+        public void GetAllLeagues()
+        {
+            foreach (KeyValuePair<string, string> item in Globe.LeaguesDic)
+            {
+                GetLeague(item.Key, item.Value);
+                Globe.WriteLog("get html: " + item.Key + " " + item.Value);
+            }
+        }
+
+        public void GetLeague(string leagueName, string leagueUrl)
         {
             string dir = Globe.RootDir +  "\\" + leagueName + "\\";
 

@@ -18,6 +18,10 @@ namespace WhoScoredSpiderService
         public const string CONFIG_ROOT_DIR = "RootDir";
         public static string RootDir = "";
 
+        public const string CONFIG_WORK_TIME = "WorkTime";
+        public static int WorkTime_Hour = 0;
+        public static int WorkTime_Minute = 0;
+
         public const string CONFIG_LEAGUES = "Leagues";
         public static Dictionary<string, string> LeaguesDic = new Dictionary<string, string>();
 

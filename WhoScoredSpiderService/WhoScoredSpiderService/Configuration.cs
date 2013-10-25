@@ -10,8 +10,8 @@ namespace WhoScoredSpiderService
         public void GetConfiguration()
         {
             ReadConfig();
-            initializeRootDir();
-            initializeLeagues();
+            InitializeRootDir();
+            InitializeLeagues();
         }
 
         private void ReadConfig()
@@ -43,15 +43,41 @@ namespace WhoScoredSpiderService
             }
         }
 
-        private void initializeRootDir()
+        private void InitializeRootDir()
         {
             if (Globe.ConfigDic.ContainsKey(Globe.CONFIG_ROOT_DIR))
             {
                 Globe.ConfigDic.TryGetValue(Globe.CONFIG_ROOT_DIR, out Globe.RootDir);
+
+                if (!Directory.Exists(Globe.RootDir))
+                {
+                    Directory.CreateDirectory(Globe.RootDir);
+                }
             }
         }
 
-        private void initializeLeagues()
+        private void InitializeTime()
+        {
+            if (Globe.ConfigDic.ContainsKey(Globe.CONFIG_WORK_TIME))
+            {
+                string workTime = "";
+                Globe.ConfigDic.TryGetValue(Globe.CONFIG_ROOT_DIR, out workTime);
+
+                try
+                {
+                    string[] temp = workTime.Split(':');
+                    Globe.WorkTime_Hour = int.Parse(temp[0]);
+                    Globe.WorkTime_Minute = int.Parse(temp[1]);
+                }
+                catch (Exception ex)
+                {
+                    Globe.WriteLog("Configuration.InitializeTime: " + ex.Message);
+                }
+
+            }
+        }
+
+        private void InitializeLeagues()
         {
             Globe.LeaguesDic.Clear();
             string leagues = "";
