@@ -14,7 +14,7 @@ namespace WhoscoredSpider
         public static string configFile = @"E:\whoscoredspider.ini";
 
         public const string CONFIG_ROOT_DIR = "RootDir";
-        public static string RootDir = @"E:\WhoScored\";
+        public static string RootDir = @"C:\Workspace\GitHub\WhoScored\Test\";
 
         public const string CONFIG_LEAGUES = "Leagues";
         public static Dictionary<string, string> LeaguesDic = new Dictionary<string, string>();
@@ -48,14 +48,37 @@ namespace WhoscoredSpider
     }
     #endregion
 
-    #region 比分数据结构
-    public class LiveScore
+    #region 数据结构
+    public class MatchInfo
     {
-        public int id;
-        public string League;
+        public int MatchID;
+        public string StartTime;
+        public int HomeTeamID;
         public string HomeTeam;
+        public int AwayTeamID;
         public string AwayTeam;
         public string Score;
+        public MatchRating Rating;
+    }
+
+    public class MatchRating
+    {
+        public int MatchID;
+        public int HomeTeamID;
+        public string HomeTeam;
+        public float HomeTeamRating;
+        public List<PlayerRating> HomeTeamPlayerRatings;
+        public int AwayTeamID;
+        public string AwayTeam;
+        public float AwayTeamRating;
+        public List<PlayerRating> AwayTeamPlayerRatings;
+    }
+
+    public class PlayerRating
+    {
+        public int PlayerID;
+        public string Player;
+        public float Rating;
     }
     #endregion
 }

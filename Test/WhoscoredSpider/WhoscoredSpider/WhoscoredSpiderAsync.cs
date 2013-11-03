@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
@@ -10,36 +11,24 @@ namespace WhoscoredSpider
     class WhoscoredSpiderAsync
     {
         public static int count = 0;
-
-        public async void GetLiveScores(string league, string leagueName)
+        
+        public async void GetMatches(string dir, Dictionary<int, string> matchIDs)
         {
-            count++;
-            string leagueUrl = Globe.WhoScoredUrl + league;
-            Task<string> getHtmlContentByUrl = GetHtmlContentByUrl(leagueUrl);
-            string htmlContent = await GetHtmlContentByUrl(leagueUrl);
-
-            ContentFilter filter = new ContentFilter();
-            htmlContent = filter.GetStandingsInfoFromContent(htmlContent);
-            List<LiveScore> liveScoreList = filter.GetLiveScoresFromStandingsInfo(htmlContent, leagueName);
-
-            GetMatches(liveScoreList[1].id);
-
-            for (int i = 0; i < liveScoreList.Count; i++)
+            if (matchIDs.Count > 0)
             {
-                Globe.WriteLog("scores.txt", "League:" + liveScoreList[i].League + " id:" + liveScoreList[i].id + " Home:" + liveScoreList[i].HomeTeam + " Away:" + liveScoreList[i].AwayTeam + " Score:" + liveScoreList[i].Score);
-                
-            }
-            
-            count--;
-        }
+                foreach (KeyValuePair<int, string> match in matchIDs)
+                {
+                    Task<string> getHtmlContentByUrl = GetHtmlContentByUrl(match.Value);
+                    string matchHtmlContent = await GetHtmlContentByUrl(match.Value);
 
-        public async void GetMatches(int matchID)
-        {
-            string matchUrl = Globe.WhoScoredMatchesUrl + matchID + @"/Live";
-            Task<string> getHtmlContentByUrl = GetHtmlContentByUrl(matchUrl);
-            string htmlContent = await GetHtmlContentByUrl(matchUrl);
-            
-            Globe.WriteLog(matchID.ToString() + ".txt", htmlContent);
+                    string fileName = dir + match.Key + ".txt";
+
+                    if (File.Exists(fileName))
+                        File.Delete(fileName);
+
+                    Globe.WriteLog(fileName, matchHtmlContent);
+                }
+            }
         }
 
         private async Task<string> GetHtmlContentByUrl(string url)

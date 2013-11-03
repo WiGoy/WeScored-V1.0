@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace WhoscoredSpider
 {
@@ -10,16 +7,19 @@ namespace WhoscoredSpider
     {
         static void Main(string[] args)
         {
-            Configuration config = new Configuration();
-            config.SetConfiguration();
+            string leagueName = "Italy_SerieA";
+            string dir = Globe.RootDir + leagueName + @"\";
+            string liveScorePath = Globe.RootDir + leagueName + @"\LiveScores.txt";
+
+            ContentFilter filter = new ContentFilter();
+            List<MatchInfo> matchInfos = filter.GetAllMatchInfos(dir);
             
-            WhoScoredSpider whoscoredSpider = new WhoScoredSpider();
+            /*
+            Dictionary<int, string> matchIDs = filter.GetMatchIDs(dir);
 
-            foreach (KeyValuePair<string, string> item in Globe.LeaguesDic)
-            {
-                whoscoredSpider.GetLiveScores(item.Value, item.Key);
-            }
-
+            WhoscoredSpiderAsync spider = new WhoscoredSpiderAsync();
+            spider.GetMatches(dir, matchIDs);
+            */
             Console.ReadKey();
         }
     }

@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration.cs" />
+    <Compile Include="ContentFilter.cs" />
     <Compile Include="Globe.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>

@@ -37,9 +37,10 @@ namespace WhoScoredSpiderService
             int iHour = e.SignalTime.Hour;
             int iMinute = e.SignalTime.Minute;
 
+            //  downloading Leagues
             if (iHour == Globe.WorkTime_Hour && iMinute == Globe.WorkTime_Minute)
             {
-                Globe.WriteLog("Begin downloading...");
+                Globe.WriteLog("Begin downloading leagues...");
 
                 try
                 {
@@ -53,7 +54,28 @@ namespace WhoScoredSpiderService
                 }
                 catch (Exception ex)
                 {
-                    Globe.WriteLog("WhoScoredSpiderService.ChkSrv: " + ex.Message);
+                    Globe.WriteLog("WhoScoredSpiderService.ChkSrv(Leagues): " + ex.Message);
+                }
+            }
+
+            //  downloading matches 10 minutes later
+            if (iHour == Globe.WorkTime_Hour && iMinute == Globe.WorkTime_Minute + 10)
+            {
+                Globe.WriteLog("Begin downloading matches...");
+
+                try
+                {
+                    Timer tempTimer = (Timer)source;
+                    tempTimer.Enabled = false;
+
+                    SpiderAsync spider = new SpiderAsync();
+                    spider.GetAllMatches();
+
+                    tempTimer.Enabled = true;
+                }
+                catch (Exception ex)
+                {
+                    Globe.WriteLog("WhoScoredSpiderService.ChkSrv(Matches): " + ex.Message);
                 }
             }
         }

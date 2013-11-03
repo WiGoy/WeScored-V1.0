@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -13,29 +13,52 @@ namespace WhoscoredSpider
         //  u0022是双引号的ASCII码
         private const string scoreIDFilter = @"(id=\u0022).*?(\u0022)";
         private const string scoreTitleFilter = @"(?:title=\u0022).*?(?:\u0022)";
-        //  用来匹配比分，如1-0,2-1之类
-        private const string scoreFilter = @"\d+-\d+";
 
-        private const string ratingFilter = @"(?:var initialMatchData =).*?(?:\]\;)";
+        private const string matchInfoFilter = @"(?:var initialMatchData =).*?(?:])";
 
-        private Hashtable liveScoreHashtable = new Hashtable();
+        public Dictionary<int, string> GetMatchIDs(string dir)
+        {
+            string liveScorePath = dir + @"LiveScores.txt";
+
+            string htmlContent = ReadLiveStore(liveScorePath);
+            string standingsContent = GetStandingsContent(htmlContent);
+
+            Dictionary<int, int> lastMatches = GetLastMatches(dir);
+            Dictionary<int, string> matchIDs = GetMatchIDsFromStandingsContent(standingsContent, lastMatches);
+
+            return matchIDs;
+        }
+
+        private string ReadLiveStore(string fileName)
+        {
+            string htmlContent = "";
+
+            try
+            {
+                StreamReader sr = new StreamReader(fileName, Encoding.Default);
+                htmlContent = sr.ReadToEnd();
+            }
+            catch (Exception) { }
+
+            return htmlContent;
+        }
 
         /// <summary>
-        /// 根据关键字standings过滤htmlContent
+        /// 根据关键字DataStore.prime('standings'过滤htmlContent
         /// </summary>
         /// <param name="htmlContent"></param>
         /// <returns></returns>
-        public string GetStandingsInfoFromContent(string htmlContent)
+        private string GetStandingsContent(string htmlContent)
         {
-            string standingsInfo = "";
+            string standingsContent = "";
             MatchCollection matches = Regex.Matches(htmlContent, standingsFilter, RegexOptions.Singleline);
 
             for (int i = 0; i < matches.Count; i++)
             {
-                standingsInfo += matches[i].Value;
+                standingsContent += matches[i].Value;
             }
 
-            return standingsInfo;
+            return standingsContent;
         }
 
         /// <summary>
@@ -43,80 +66,120 @@ namespace WhoscoredSpider
         /// </summary>
         /// <param name="standingsInfo"></param>
         /// <returns></returns>
-        public List<LiveScore> GetLiveScoresFromStandingsInfo(string standingsInfo, string league)
+        private Dictionary<int, string> GetMatchIDsFromStandingsContent(string standingsContent, Dictionary<int, int> lastMatches)
         {
-            List<LiveScore> liveScoreList = new List<LiveScore>();
-            MatchCollection matches = Regex.Matches(standingsInfo, liveScoresFilter, RegexOptions.Singleline);
+            Dictionary<int, string> matchIDs = new Dictionary<int, string>();
+            MatchCollection matches = Regex.Matches(standingsContent, liveScoresFilter, RegexOptions.Singleline);
 
             for (int i = 0; i < matches.Count; i++)
             {
-                string liveScoreStr = matches[i].Value;
-                int id = int.Parse(Regex.Match(Regex.Match(liveScoreStr, scoreIDFilter).Value, @"\d+").Value);
+                int id = int.Parse(Regex.Match(Regex.Match(matches[i].Value, scoreIDFilter).Value, @"\d+").Value);
 
-                if (!liveScoreHashtable.ContainsKey(id))
+                if (!matchIDs.ContainsKey(id) && !lastMatches.ContainsKey(id))
                 {
-                    Match titleMatch = Regex.Match(liveScoreStr, scoreTitleFilter);
-                    LiveScore liveScore = AnalyzeTitle(titleMatch.Value.Split('\"')[1]);
-                    liveScore.id = id;
-                    liveScore.League = league;
-                
-                    liveScoreHashtable.Add(liveScore.id, liveScore.id);
-                    liveScoreList.Add(liveScore);
+                    string url = Globe.WhoScoredMatchesUrl + id + @"/live";
+                    matchIDs.Add(id, url);
                 }
             }
 
-            liveScoreHashtable.Clear();
-            liveScoreHashtable = null;
-
-            return liveScoreList;
+            return matchIDs;
         }
 
-        public string GetRatingInfoFromContent(string htmlContent)
+        private Dictionary<int, int> GetLastMatches(string path)
         {
-            string ratingInfo = "";
-            MatchCollection matches = Regex.Matches(htmlContent, ratingFilter, RegexOptions.Singleline);
+            Dictionary<int, int> lastMatches = new Dictionary<int, int>();
+            DirectoryInfo dir = new DirectoryInfo(path);
+            FileInfo[] fileInfos = dir.GetFiles();
+
+            if (fileInfos.Length > 0)
+            {
+                foreach (FileInfo file in fileInfos)
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(file.FullName);
+
+                    if (fileName.Equals("LiveScores"))
+                        continue;
+
+                    int id = int.Parse(fileName);
+
+                    if (!lastMatches.ContainsKey(id))
+                        lastMatches.Add(id, id);
+                }
+            }
+
+            return lastMatches;
+        }
+
+        public List<MatchInfo> GetAllMatchInfos(string dir)
+        {
+            List<MatchInfo> matchInfos = new List<MatchInfo>();
+            DirectoryInfo directory = new DirectoryInfo(dir);
+            FileInfo[] fileInfos = directory.GetFiles();
+
+            if (fileInfos.Length > 0)
+            {
+                foreach (FileInfo file in fileInfos)
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(file.FullName);
+
+                    if (fileName.Equals("LiveScores"))
+                        continue;
+
+                    string htmlContent = ReadLiveStore(file.FullName);
+                    MatchInfo matchInfo = GetMatchInfo(htmlContent);
+                    MatchRating matchRating = GetMatchRating(htmlContent, matchInfo.HomeTeamID, matchInfo.HomeTeam, matchInfo.AwayTeamID, matchInfo.AwayTeam);
+                    matchInfo.MatchID = int.Parse(fileName);
+
+                    matchInfos.Add(matchInfo);
+                }
+            }
+
+            return matchInfos;
+        }
+
+        private MatchInfo GetMatchInfo(string htmlContent)
+        {
+            MatchInfo matchInfo = new MatchInfo();
+
+            string infoString = "";
+            MatchCollection matches = Regex.Matches(htmlContent, matchInfoFilter, RegexOptions.Singleline);
 
             for (int i = 0; i < matches.Count; i++)
             {
-                ratingInfo += matches[i].Value;
+                infoString += matches[i].Value;
             }
 
-            return ratingInfo;
+            string[] infos = infoString.Split(new Char[] { '[', ',', '\'', ']' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (infos.Length == 12)
+            {
+                matchInfo.HomeTeamID = int.Parse(infos[1]);
+                matchInfo.AwayTeamID = int.Parse(infos[2]);
+                matchInfo.HomeTeam = infos[3];
+                matchInfo.AwayTeam = infos[4];
+                matchInfo.StartTime = infos[5];
+                matchInfo.Score = infos[11];
+            }
+
+            return matchInfo;
         }
 
-        /// <summary>
-        /// 把title拆分成HomeTeam, AwayTeam以及Score
-        /// </summary>
-        /// <param name="title"></param>
-        /// <param name="liveScore"></param>
-        private LiveScore AnalyzeTitle(string title)
+        private MatchRating GetMatchRating(string htmlContent, int homeTeamID, string homeTeam, int awayTeamID, string awayTeam)
         {
-            LiveScore liveScore = new LiveScore();
-            string[] titleArray = title.Split(' ');
-            int scoreIndex = 0;
+            MatchRating matchRating = new MatchRating();
+            string ratingString = "";
 
-            for ( ; scoreIndex < titleArray.Length; scoreIndex++)
+            string homeTeamFilter = @"(?:[[78,'Cagliari',).*?(?:]])";
+
+            MatchCollection matches = Regex.Matches(htmlContent, homeTeamFilter, RegexOptions.Singleline);
+
+            for (int i = 0; i < matches.Count; i++)
             {
-                if (!Regex.IsMatch(titleArray[scoreIndex], scoreFilter))
-                {
-                    liveScore.HomeTeam += titleArray[scoreIndex] + " ";
-                }
-                else
-                {
-                    liveScore.Score = titleArray[scoreIndex];
-                    break;
-                }
+                ratingString += matches[i].Value;
             }
 
-            for (scoreIndex += 1; scoreIndex < titleArray.Length; scoreIndex++)
-            {
-                liveScore.AwayTeam += titleArray[scoreIndex] + " ";
-            }
 
-            liveScore.HomeTeam = liveScore.HomeTeam.Trim();
-            liveScore.AwayTeam = liveScore.AwayTeam.Trim();
-
-            return liveScore;
+            return matchRating;
         }
     }
 }
