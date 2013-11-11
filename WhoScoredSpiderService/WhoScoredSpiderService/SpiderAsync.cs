@@ -54,25 +54,26 @@ namespace WhoScoredSpiderService
                     string fileName = directory + LeagueFileName;
                     string htmlContent = LoadContent(fileName);
 
-                    Dictionary<int, int> originalMatchIDs = GetOriginalMatchIDs(directory);
-                    Dictionary<int, string> matchIDs = filter.GetMatchIDs(htmlContent, originalMatchIDs);
+                    List<int> originalMatchIDs = GetOriginalMatchIDs(directory);
+                    List<int> matchIDs = filter.GetMatchIDs(htmlContent, originalMatchIDs);
                     GetMatches(item.Key, matchIDs);
                 }
             }
         }
 
-        public async void GetMatches(string leagueName, Dictionary<int, string> matchIDs)
+        public async void GetMatches(string leagueName, List<int> matchIDs)
         {
             if (matchIDs.Count > 0)
             {
                 string dir = Globe.RootDir + "\\" + leagueName + "\\";
 
-                foreach (KeyValuePair<int, string> match in matchIDs)
+                foreach (int id in matchIDs)
                 {
-                    Task<string> getHtmlContentByUrl = GetHtmlContentByUrl(match.Value);
-                    string matchHtmlContent = await GetHtmlContentByUrl(match.Value);
+                    string url = Globe.WhoScoredMatchesUrl + id + @"/LiveStatistics";
+                    Task<string> getHtmlContentByUrl = GetHtmlContentByUrl(url);
+                    string matchHtmlContent = await GetHtmlContentByUrl(url);
 
-                    string fileName = dir + match.Key + ".txt";
+                    string fileName = dir + id + ".txt";
                     SaveContent(fileName, matchHtmlContent);
                 }
             }
@@ -131,9 +132,9 @@ namespace WhoScoredSpiderService
             return htmlContent;
         }
 
-        private Dictionary<int, int> GetOriginalMatchIDs(string directory)
+        private List<int> GetOriginalMatchIDs(string directory)
         {
-            Dictionary<int, int> originalMatchIDs = new Dictionary<int, int>();
+            List<int> originalMatchIDs = new List<int>();
             DirectoryInfo dir = new DirectoryInfo(directory);
             FileInfo[] fileInfos = dir.GetFiles();
 
@@ -152,8 +153,8 @@ namespace WhoScoredSpiderService
 
                     int id = int.Parse(Path.GetFileNameWithoutExtension(file.FullName));
 
-                    if (!originalMatchIDs.ContainsKey(id))
-                        originalMatchIDs.Add(id, id);
+                    if (!originalMatchIDs.Contains(id))
+                        originalMatchIDs.Add(id);
                 }
             }
 

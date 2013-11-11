@@ -12,10 +12,10 @@ namespace WhoScoredSpiderService
         private const string liveScoresFilter = @"(?:<a\sclass=).*?(?:\/>)";
         private const string scoreIDFilter = @"(id=\u0022).*?(\u0022)";
 
-        public Dictionary<int, string> GetMatchIDs(string htmlContent, Dictionary<int, int> originalMatchIDs)
+        public List<int> GetMatchIDs(string htmlContent, List<int> originalMatchIDs)
         {
             string standingsContent = GetStandingsContent(htmlContent);
-            Dictionary<int, string> matchIDs = GetMatchIDsFromStandingsContent(standingsContent, originalMatchIDs);
+            List<int> matchIDs = GetMatchIDsFromStandingsContent(standingsContent, originalMatchIDs);
 
             return matchIDs;
         }
@@ -43,20 +43,17 @@ namespace WhoScoredSpiderService
         /// </summary>
         /// <param name="standingsInfo"></param>
         /// <returns></returns>
-        private Dictionary<int, string> GetMatchIDsFromStandingsContent(string standingsContent, Dictionary<int, int> originalMatchIDs)
+        private List<int> GetMatchIDsFromStandingsContent(string standingsContent, List<int> originalMatchIDs)
         {
-            Dictionary<int, string> matchIDs = new Dictionary<int, string>();
+            List<int> matchIDs = new List<int>();
             MatchCollection matches = Regex.Matches(standingsContent, liveScoresFilter, RegexOptions.Singleline);
 
             for (int i = 0; i < matches.Count; i++)
             {
                 int id = int.Parse(Regex.Match(Regex.Match(matches[i].Value, scoreIDFilter).Value, @"\d+").Value);
 
-                if (!matchIDs.ContainsKey(id) && !originalMatchIDs.ContainsKey(id))
-                {
-                    string url = Globe.WhoScoredMatchesUrl + id + @"/live";
-                    matchIDs.Add(id, url);
-                }
+                if (!matchIDs.Contains(id) && !originalMatchIDs.Contains(id))
+                    matchIDs.Add(id);
             }
 
             return matchIDs;
