@@ -14,7 +14,8 @@ namespace WhoscoredSpider
         private const string scoreIDFilter = @"(id=\u0022).*?(\u0022)";
         private const string scoreTitleFilter = @"(?:title=\u0022).*?(?:\u0022)";
 
-        private const string matchInfoFilter = @"(?:var initialMatchData =).*?(?:])";
+        private const string matchInfoFilter = @"(?<=var initialMatchData =).*?(?:])";
+        private const string playerRatingFilter = @"(?:\[\d+,\').+?(?:,\[\[\[)";
 
         public Dictionary<int, string> GetMatchIDs(string dir)
         {
@@ -127,8 +128,8 @@ namespace WhoscoredSpider
 
                     string htmlContent = ReadLiveStore(file.FullName);
                     MatchInfo matchInfo = GetMatchInfo(htmlContent);
-                    MatchRating matchRating = GetMatchRating(htmlContent, matchInfo.HomeTeamID, matchInfo.HomeTeam, matchInfo.AwayTeamID, matchInfo.AwayTeam);
                     matchInfo.MatchID = int.Parse(fileName);
+                    matchInfo.Rating = GetMatchRating(htmlContent, matchInfo.HomeTeamID, matchInfo.HomeTeam, matchInfo.AwayTeamID, matchInfo.AwayTeam);
 
                     matchInfos.Add(matchInfo);
                 }
@@ -167,19 +168,59 @@ namespace WhoscoredSpider
         private MatchRating GetMatchRating(string htmlContent, int homeTeamID, string homeTeam, int awayTeamID, string awayTeam)
         {
             MatchRating matchRating = new MatchRating();
-            string ratingString = "";
+            string homeTeamFilter = @"(?<=\[\[" + homeTeamID + @",'" + homeTeam + @"',).*?(?:]]\r)";
+            string awayTeamFilter = @"(?<=,\[" + awayTeamID + @",'" + awayTeam + @"',).*?(?:]]\r)";
+            string homeTeamRatingString = "";
+            string awayTeamRatingString = "";
 
-            string homeTeamFilter = @"(?:[[78,'Cagliari',).*?(?:]])";
+            MatchCollection homeTeamMatches = Regex.Matches(htmlContent, homeTeamFilter, RegexOptions.Singleline);
 
-            MatchCollection matches = Regex.Matches(htmlContent, homeTeamFilter, RegexOptions.Singleline);
+            for (int i = 0; i < homeTeamMatches.Count; i++)
+            {
+                homeTeamRatingString += homeTeamMatches[i].Value;
+            }
+
+            MatchCollection awayTeamMatches = Regex.Matches(htmlContent, awayTeamFilter, RegexOptions.Singleline);
+
+            for (int i = 0; i < awayTeamMatches.Count; i++)
+            {
+                awayTeamRatingString += awayTeamMatches[i].Value;
+            }
+
+            matchRating.HomeTeamID = homeTeamID;
+            matchRating.HomeTeam = homeTeam;
+            matchRating.HomeTeamRating = float.Parse(homeTeamRatingString.Split(',')[0]);
+            matchRating.HomeTeamPlayerRatings = GetPlayerRatings(homeTeamRatingString);
+            matchRating.AwayTeamID = awayTeamID;
+            matchRating.AwayTeam = awayTeam;
+            matchRating.AwayTeamRating = float.Parse(awayTeamRatingString.Split(',')[0]);
+            matchRating.AwayTeamPlayerRatings = GetPlayerRatings(awayTeamRatingString);
+
+            return matchRating;
+        }
+
+        private List<PlayerRating> GetPlayerRatings(string teamRatingString)
+        {
+            List<PlayerRating> playerRatings = new List<PlayerRating>();
+
+            MatchCollection matches = Regex.Matches(teamRatingString, playerRatingFilter, RegexOptions.Singleline);
 
             for (int i = 0; i < matches.Count; i++)
             {
-                ratingString += matches[i].Value;
+                string[] playerRatingStrings = matches[i].Value.Split(new Char[] { '[', ',', '\'' }, StringSplitOptions.RemoveEmptyEntries);
+
+                if (playerRatingStrings.Length == 3 && float.Parse(playerRatingStrings[2]) > 0)
+                {
+                    PlayerRating playerRating = new PlayerRating();
+                    playerRating.PlayerID = int.Parse(playerRatingStrings[0]);
+                    playerRating.Player = playerRatingStrings[1];
+                    playerRating.Rating = float.Parse(playerRatingStrings[2]);
+
+                    playerRatings.Add(playerRating);
+                }
             }
 
-
-            return matchRating;
+            return playerRatings;
         }
     }
 }

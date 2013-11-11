@@ -14,7 +14,7 @@ namespace WhoscoredSpider
         public static string configFile = @"E:\whoscoredspider.ini";
 
         public const string CONFIG_ROOT_DIR = "RootDir";
-        public static string RootDir = @"C:\Workspace\GitHub\WhoScored\Test\";
+        public static string RootDir = @"E:\GitHubWorkspace\WhoScored\Test\";
 
         public const string CONFIG_LEAGUES = "Leagues";
         public static Dictionary<string, string> LeaguesDic = new Dictionary<string, string>();
@@ -63,7 +63,6 @@ namespace WhoscoredSpider
 
     public class MatchRating
     {
-        public int MatchID;
         public int HomeTeamID;
         public string HomeTeam;
         public float HomeTeamRating;
