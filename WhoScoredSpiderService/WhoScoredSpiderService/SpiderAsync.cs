@@ -10,6 +10,7 @@ namespace WhoScoredSpiderService
     class SpiderAsync
     {
         private const string LeagueFileName = "LiveScores.txt";
+        private const long IncorrectFileSize = 5 * 1024;
 
         public void GetAllLeagues()
         {
@@ -142,6 +143,12 @@ namespace WhoScoredSpiderService
                 {
                     if (file.FullName.Contains(LeagueFileName))
                         continue;
+
+                    if (file.Length < IncorrectFileSize)
+                    {
+                        file.Delete();
+                        continue;
+                    }
 
                     int id = int.Parse(Path.GetFileNameWithoutExtension(file.FullName));
 
