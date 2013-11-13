@@ -14,8 +14,9 @@ namespace WhoScoredReader
     #region 数据结构
     public class MatchInfo
     {
-        public int MatchID;
+        public int id;
         public string StartTime;
+        public string League;
         public TeamStatistics HomeTeamStatistics;
         public TeamStatistics AwayTeamStatistics;
         public List<PlayerStatistics> HomeTeamPlayerStatistics;
@@ -26,6 +27,7 @@ namespace WhoScoredReader
     {
         public int id;
         public string name;
+        public bool home;
         public float rating;
         public float accurate_back_zone_pass;
         public float accurate_chipped_pass;
@@ -250,6 +252,8 @@ namespace WhoScoredReader
 
     public class PlayerStatistics
     {
+        public int id;
+        public string name;
         public float accurate_back_zone_pass;
         public float accurate_chipped_pass;
         public float accurate_corners_intobox;

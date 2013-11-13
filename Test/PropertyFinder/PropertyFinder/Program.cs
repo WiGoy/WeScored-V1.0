@@ -43,8 +43,8 @@ namespace StatisticsFinder
                 }
             }
 
-            PrintProperty(FileName_TeamProperty, TeamProperty);
-            PrintProperty(FileName_PlayerProperty, PlayerProperty);
+            PrintTeamProperty(TeamProperty);
+            PrintPlayerProperty(PlayerProperty);
 
             Console.WriteLine("Complete!");
             Console.ReadKey();
@@ -77,6 +77,37 @@ namespace StatisticsFinder
                 if (!TeamProperty.Contains(property))
                     TeamProperty.Add(property);
             }
+        }
+
+        private static void PrintTeamProperty(List<string> propertyList)
+        {
+            propertyList.Sort();
+
+            string structStr = "";
+            string constantStr = "";
+            string functionStr = "";
+            string dbCreateStr = "";
+            string dbInsertStr1 = "\"INSERT INTO TeamStatistics (team_id, team_name, league, match_id, home, rating";
+            string dbInsertStr2 = ") VALUES (\" + team.id + \", '\" + team.name + \"', '\" + league + \"', \" + matchID + \", \" + home + \", \" + team.rating + \", ";
+
+            foreach (string property in propertyList)
+            {
+                structStr += "public float " + property + ";\r\n";
+                constantStr += "public const string " + property.ToUpper() + " = \"" + property + "\";\r\n";
+                functionStr += "team." + property + " = float.Parse(GetStatistics(teamContent, TeamStatisticsFilter." + property.ToUpper() + "));\r\n";
+                dbCreateStr += "  `" + property + "` FLOAT DEFAULT NULL,\r\n";
+                dbInsertStr1 += ", " + property;
+                dbInsertStr2 += "\" + team." + property + " + \", ";
+            }
+
+            string dbInsertStr = dbInsertStr1 + dbInsertStr2;
+            dbInsertStr = dbInsertStr.Remove(dbInsertStr.Length - 2) + ")\";\r\n";
+
+            WriteLog(FileName_TeamProperty, structStr);
+            WriteLog(FileName_TeamProperty, constantStr);
+            WriteLog(FileName_TeamProperty, functionStr);
+            WriteLog(FileName_TeamProperty, dbCreateStr);
+            WriteLog(FileName_TeamProperty, dbInsertStr);
         }
 
         private static void GetPlayerProperty(string htmlContent)
@@ -113,37 +144,46 @@ namespace StatisticsFinder
             }
         }
 
-        private static void PrintProperty(string fileName, List<string> propertyList)
+        private static void PrintPlayerProperty(List<string> propertyList)
         {
             propertyList.Sort();
 
-            //  for struct
+            string structStr = "";
+            string constantStr = "";
+            string functionStr = "";
+            string dbCreateStr = "";
+            string dbInsertStr1 = "\"INSERT INTO PlayerStatistics (player_id, player_name, team_id, team_name, league, match_id, home";
+            string dbInsertStr2 = ") VALUES (\" + player.id + \", '\" + player.name + \"', \" + teamID + \", '\" + teamName + \"', '\" + league + \"', \" + matchID + \", \" + home + \", ";
+
             foreach (string property in propertyList)
             {
                 if (property.Equals(POSITION))
-                    WriteLog(fileName, "public string " + property + ";");
+                {
+                    structStr += "public string " + property + ";\r\n";
+                    functionStr += "player." + property + " = GetStatistics(playerContent, PlayerStatisticsFilter." + property.ToUpper() + ").Replace(\"'\", \"\");\r\n";
+                    dbCreateStr += "  `" + property + "` VARCHAR(10) NULL,\r\n";
+                    dbInsertStr2 += "'\" + player." + property + " + \"', ";
+                }
                 else
-                    WriteLog(fileName, "public float " + property + ";");
+                {
+                    structStr += "public float " + property + ";\r\n";
+                    functionStr += "player." + property + " = float.Parse(GetStatistics(playerContent, PlayerStatisticsFilter." + property.ToUpper() + "));\r\n";
+                    dbCreateStr += "  `" + property + "` FLOAT NULL,\r\n";
+                    dbInsertStr2 += "\" + player." + property + " + \", ";
+                }
+
+                constantStr += "public const string " + property.ToUpper() + " = \"" + property + "\";\r\n";
+                dbInsertStr1 += ", " + property;
             }
 
-            WriteLog(fileName, "");
+            string dbInsertStr = dbInsertStr1 + dbInsertStr2;
+            dbInsertStr = dbInsertStr.Remove(dbInsertStr.Length - 2) + ")\";\r\n";
 
-            //  for const string
-            foreach (string property in propertyList)
-            {
-                WriteLog(fileName, "public const string " + property.ToUpper() + " = \"" + property + "\";");
-            }
-
-            WriteLog(fileName, "");
-
-            //  for database
-            foreach (string property in propertyList)
-            {
-                if (property.Equals(POSITION))
-                    WriteLog(fileName, "`" + property + "` VARCHAR(10) NULL,");
-                else
-                    WriteLog(fileName, "`" + property + "` FLOAT NULL,");
-            }
+            WriteLog(FileName_PlayerProperty, structStr);
+            WriteLog(FileName_PlayerProperty, constantStr);
+            WriteLog(FileName_PlayerProperty, functionStr);
+            WriteLog(FileName_PlayerProperty, dbCreateStr);
+            WriteLog(FileName_PlayerProperty, dbInsertStr);
         }
 
         private static string LoadContent(string fileName)
