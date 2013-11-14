@@ -12,50 +12,11 @@ namespace WhoScoredReader
         private const string statisticsFilter = @"(?:\[\d+,\').+?(?:]]]],)";
         private const string playerStatisticsFilter = @"(?:\[\d+,\').+?(?:]\r\n,)";
 
-        private string ReadLiveStore(string fileName)
-        {
-            string htmlContent = "";
-
-            try
-            {
-                StreamReader sr = new StreamReader(fileName, Encoding.Default);
-                htmlContent = sr.ReadToEnd();
-            }
-            catch (Exception) { }
-
-            return htmlContent;
-        }
-
-        public List<MatchInfo> GetAllMatchInfos(string dir)
-        {
-            List<MatchInfo> matchInfos = new List<MatchInfo>();
-            DirectoryInfo directory = new DirectoryInfo(dir);
-            FileInfo[] fileInfos = directory.GetFiles();
-
-            if (fileInfos.Length > 0)
-            {
-                foreach (FileInfo file in fileInfos)
-                {
-                    string fileName = Path.GetFileNameWithoutExtension(file.FullName);
-
-                    if (fileName.Equals("LiveScores"))
-                        continue;
-
-                    string htmlContent = ReadLiveStore(file.FullName);
-                    MatchInfo matchInfo = GetMatchInfo(htmlContent);
-                    matchInfo.id = int.Parse(fileName);
-                    matchInfo.League = "Italy_SerieA";
-
-                    matchInfos.Add(matchInfo);
-                }
-            }
-
-            return matchInfos;
-        }
-
-        private MatchInfo GetMatchInfo(string htmlContent)
+        public MatchInfo GetMatchInfo(int matchID, string league, string htmlContent)
         {
             MatchInfo matchInfo = new MatchInfo();
+            matchInfo.id = matchID;
+            matchInfo.League = league;
 
             string infoString = "";
             MatchCollection matches = Regex.Matches(htmlContent, matchInfoFilter, RegexOptions.Singleline);
@@ -87,8 +48,10 @@ namespace WhoScoredReader
                 matchInfo.StartTime = DateTime.Parse(infos[5]).ToString("yyyy/MM/dd HH:mm:ss");
                 matchInfo.HomeTeamStatistics = homeTeamStatistics;
                 matchInfo.AwayTeamStatistics = awayTeamStatistics;
-                matchInfo.HomeTeamPlayerStatistics = GetPlayerStatisticsList(htmlContent, homeTeamStatistics.id, homeTeamStatistics.name);
-                matchInfo.AwayTeamPlayerStatistics = GetPlayerStatisticsList(htmlContent, awayTeamStatistics.id, awayTeamStatistics.name);
+                matchInfo.HomeTeamPlayerStatistics = GetPlayerStatisticsList(htmlContent, homeTeamStatistics.id, homeTeamStatistics.name,
+                    ref matchInfo.ManOfTheMatchPlayerID, ref matchInfo.ManOfTheMatchPlayerName);
+                matchInfo.AwayTeamPlayerStatistics = GetPlayerStatisticsList(htmlContent, awayTeamStatistics.id, awayTeamStatistics.name,
+                    ref matchInfo.ManOfTheMatchPlayerID, ref matchInfo.ManOfTheMatchPlayerName);
             }
 
             return matchInfo;
@@ -321,7 +284,8 @@ namespace WhoScoredReader
             return team;
         }
 
-        private List<PlayerStatistics> GetPlayerStatisticsList(string htmlContent, int teamID, string teamName)
+        private List<PlayerStatistics> GetPlayerStatisticsList(string htmlContent, int teamID, string teamName,
+            ref int manOfTheMatchPlayerID, ref string manOfTheMatchPlayerName)
         {
             List<PlayerStatistics> playerStatisticsList = new List<PlayerStatistics>();
 
@@ -343,6 +307,12 @@ namespace WhoScoredReader
 
                     string tempName = playerInfos[1];
                     playerStatistics.name = tempName.Substring(1, tempName.Length - 2);
+                }
+
+                if (playerStatistics.man_of_the_match == 1)
+                {
+                    manOfTheMatchPlayerID = playerStatistics.id;
+                    manOfTheMatchPlayerName = playerStatistics.name;
                 }
 
                 playerStatisticsList.Add(playerStatistics);

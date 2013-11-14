@@ -5,6 +5,28 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 CREATE SCHEMA IF NOT EXISTS `WhoScoredDB` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ;
 USE `WhoScoredDB` ;
 
+-- ----------------------------
+-- Table `WhoScoredDB`.`matchinformation`
+-- ----------------------------
+CREATE TABLE IF NOT EXISTS `WhoScoredDB`.`matchinformation` (
+  `match_id` INT NOT NULL,
+  `start_time` time DEFAULT NULL,
+  `league` VARCHAR(20) DEFAULT NULL,
+  `home_team_id` INT(11) DEFAULT NULL,
+  `home_team_name` VARCHAR(20) DEFAULT NULL,
+  `home_team_rating` FLOAT DEFAULT NULL,
+  `home_team_goals_for` FLOAT DEFAULT NULL,
+  `home_team_points` FLOAT DEFAULT NULL,
+  `away_team_id` INT(11) DEFAULT NULL,
+  `away_team_name` VARCHAR(20) DEFAULT NULL,
+  `away_team_rating` FLOAT DEFAULT NULL,
+  `away_team_goals_for` FLOAT DEFAULT NULL,
+  `away_team_points` FLOAT DEFAULT NULL,
+  `man_of_the_match_player_id` INT(11) DEFAULT NULL,
+  `man_of_the_match_player_name` VARCHAR(40) DEFAULT NULL,
+  PRIMARY KEY (`match_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- -----------------------------------------------------
 -- Table `WhoScoredDB`.`TeamStatistics`
 -- -----------------------------------------------------
@@ -235,9 +257,8 @@ CREATE TABLE IF NOT EXISTS `WhoScoredDB`.`TeamStatistics` (
   `won_contest` FLOAT DEFAULT NULL,
   `won_corners` FLOAT DEFAULT NULL,
   `won_tackle` FLOAT DEFAULT NULL,
-  PRIMARY KEY (`ID`))
-ENGINE = InnoDB;
-
+  PRIMARY KEY (`id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
 -- Table `WhoScoredDB`.`PlayerStatistics`
@@ -552,8 +573,8 @@ CREATE TABLE IF NOT EXISTS `WhoScoredDB`.`PlayerStatistics` (
   `won_corners` FLOAT NULL,
   `won_tackle` FLOAT NULL,
   `yellow_card` FLOAT NULL,
-  PRIMARY KEY (`ID`))
-ENGINE = InnoDB;
+  PRIMARY KEY (`id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

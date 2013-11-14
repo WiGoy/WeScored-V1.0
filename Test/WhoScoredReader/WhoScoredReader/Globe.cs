@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WhoScoredReader
 {
@@ -17,6 +14,8 @@ namespace WhoScoredReader
         public int id;
         public string StartTime;
         public string League;
+        public int ManOfTheMatchPlayerID;
+        public string ManOfTheMatchPlayerName;
         public TeamStatistics HomeTeamStatistics;
         public TeamStatistics AwayTeamStatistics;
         public List<PlayerStatistics> HomeTeamPlayerStatistics;
