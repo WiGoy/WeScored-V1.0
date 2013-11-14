@@ -30,6 +30,7 @@ namespace WhoScoredSpiderService
 
         protected override void OnStop()
         {
+            Globe.WriteLog("Service Stop.");
         }
 
         private void ChkSrv(object source, System.Timers.ElapsedEventArgs e)
