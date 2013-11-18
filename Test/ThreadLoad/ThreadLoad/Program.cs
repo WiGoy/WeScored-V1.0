@@ -55,7 +55,12 @@ namespace ThreadLoad
                         continue;
 
                     string htmlContent = LoadFile(file.FullName);
-                    Thread.Sleep(Globe.loadFileTime);
+
+                    ContentFilter filter = new ContentFilter();
+                    MatchInfo matchInfo = filter.GetMatchInfo(int.Parse(fileName), LeagueName, htmlContent);
+
+                    DAL dal = new DAL();
+                    dal.InsertData(matchInfo);
                     Console.WriteLine(LeagueName + ": Match " + fileName + " Loading complete!");
                 }
 

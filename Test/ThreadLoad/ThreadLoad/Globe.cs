@@ -7,7 +7,7 @@ namespace ThreadLoad
     {
         public const int loadFileTime = 2000;
         public const long IncorrectFileSize = 5 * 1024;
-        public static string RootDir = @"C:\WhoScored\htmlContent\";
+        public static string RootDir = @"E:\WhoScored\htmlContent\";
     }
 
     #region 数据结构
