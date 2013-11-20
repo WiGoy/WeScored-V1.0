@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
-using System.ServiceProcess;
-using System.Timers;
-
 using System.Diagnostics;
+using System.IO;
+using System.ServiceProcess;
+using System.Threading;
 
 namespace WhoScoredSpiderService
 {
@@ -21,7 +21,7 @@ namespace WhoScoredSpiderService
             Configuration config = new Configuration();
             config.GetConfiguration();
 
-            Timer timer = new Timer();
+            System.Timers.Timer timer = new System.Timers.Timer();
             timer.Interval = 60000;
             timer.Elapsed += new System.Timers.ElapsedEventHandler(ChkSrv);
             timer.AutoReset = true;
@@ -45,7 +45,7 @@ namespace WhoScoredSpiderService
 
                 try
                 {
-                    Timer tempTimer = (Timer)source;
+                    System.Timers.Timer tempTimer = (System.Timers.Timer)source;
                     tempTimer.Enabled = false;
 
                     SpiderAsync spider = new SpiderAsync();
@@ -59,14 +59,14 @@ namespace WhoScoredSpiderService
                 }
             }
 
-            //  downloading matches 10 minutes later
-            if (iHour == Globe.WorkTime_Hour && iMinute == Globe.WorkTime_Minute + 10)
+            //  downloading matches 1 minutes later
+            if (iHour == Globe.WorkTime_Hour && iMinute == Globe.WorkTime_Minute + 1)
             {
                 Globe.WriteLog("Begin downloading matches...");
 
                 try
                 {
-                    Timer tempTimer = (Timer)source;
+                    System.Timers.Timer tempTimer = (System.Timers.Timer)source;
                     tempTimer.Enabled = false;
 
                     SpiderAsync spider = new SpiderAsync();
@@ -77,6 +77,34 @@ namespace WhoScoredSpiderService
                 catch (Exception ex)
                 {
                     Globe.WriteLog("WhoScoredSpiderService.ChkSrv(Matches): " + ex.Message);
+                }
+            }
+
+            //  updating matches 10 minutes later
+            if (iHour == Globe.WorkTime_Hour && iMinute == Globe.WorkTime_Minute + 10)
+            {
+                Globe.WriteLog("Begin updating matches...");
+
+                try
+                {
+                    System.Timers.Timer tempTimer = (System.Timers.Timer)source;
+                    tempTimer.Enabled = false;
+
+                    DirectoryInfo directory = new DirectoryInfo(Globe.RootDir);
+                    DirectoryInfo[] leagueDir = directory.GetDirectories();
+
+                    foreach (DirectoryInfo league in leagueDir)
+                    {
+                        UpdateDataBase updateDB = new UpdateDataBase(league.Name, league.FullName);
+                        Thread leagueThread = new Thread(new ThreadStart(updateDB.LoadFolder));
+                        leagueThread.Start();
+                    }
+
+                    tempTimer.Enabled = true;
+                }
+                catch (Exception ex)
+                {
+                    Globe.WriteLog("WhoScoredSpiderService.ChkSrv(Update): " + ex.Message);
                 }
             }
         }

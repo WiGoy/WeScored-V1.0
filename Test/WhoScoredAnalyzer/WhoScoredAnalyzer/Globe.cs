@@ -1,65 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Text;
 
-
-namespace WhoScoredSpiderService
+namespace WhoScoredAnalyzer
 {
-    public class Globe
+    class Globe
     {
-        public const string WhoScoredUrl = "http://www.whoscored.com";
-        public const string WhoScoredMatchesUrl = "http://www.whoscored.com/Matches/";
-        public const string LeagueFileName = "LiveScores.txt";
-        public const long IncorrectFileSize = 5 * 1024;
-
-        public static string ConfigFile = System.AppDomain.CurrentDomain.BaseDirectory + @"whoscoredspider.ini";
-        public static Dictionary<string, string> ConfigDic = new Dictionary<string, string>();
-
-        public const string CONFIG_ROOT_DIR = "RootDir";
-        public static string RootDir = "";
-
-        public const string CONFIG_WORK_TIME = "WorkTime";
-        public static int WorkTime_Hour = 0;
-        public static int WorkTime_Minute = 0;
-
-        public const string CONFIG_LEAGUES = "Leagues";
-        public static Dictionary<string, string> LeaguesDic = new Dictionary<string, string>();
-
-        private static string LogFile = System.AppDomain.CurrentDomain.BaseDirectory + @"log.txt";
-
-        public static void WriteLog(string txt)
-        {
-            try
-            {
-                StreamWriter sw = new StreamWriter(LogFile, true, Encoding.Default);
-                sw.WriteLine(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") + " " + txt);
-                sw.Flush();
-                sw.Close();
-            }
-            catch (Exception) { }
-        }
-
-        public static string LoadFile(string fileName)
-        {
-            string htmlContent = "";
-
-            try
-            {
-                StreamReader sr = new StreamReader(fileName, Encoding.Default);
-                htmlContent = sr.ReadToEnd();
-            }
-            catch (Exception ex)
-            {
-                Globe.WriteLog("SpiderAsync.LoadContent: " + ex.Message);
-            }
-
-            return htmlContent;
-        }
     }
 
-    #region MatchInfo数据结构
+    #region 数据结构
     public class MatchInfo
     {
         public int id;

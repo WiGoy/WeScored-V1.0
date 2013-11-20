@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
-namespace WhoScoredSpiderService
+namespace WhoScoredAnalyzer
 {
-    class DAL
+    public class DAL
     {
         public void InsertMatchInformation(MatchInfo matchInfo)
         {

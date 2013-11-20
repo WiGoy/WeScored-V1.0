@@ -9,9 +9,6 @@ namespace WhoScoredSpiderService
 {
     class SpiderAsync
     {
-        private const string LeagueFileName = "LiveScores.txt";
-        private const long IncorrectFileSize = 5 * 1024;
-
         public void GetAllLeagues()
         {
             if (Globe.LeaguesDic.Count > 0)
@@ -31,11 +28,12 @@ namespace WhoScoredSpiderService
                 Directory.CreateDirectory(dir);
 
             string url = Globe.WhoScoredUrl + leagueUrl;
-            string fileName = dir + LeagueFileName;
+            string fileName = dir + Globe.LeagueFileName;
 
             if (File.Exists(fileName))
                 File.Delete(fileName);
 
+            Globe.WriteLog("Downloading from url: " + url);
             Task<string> getHtmlContentByUrl = GetHtmlContentByUrl(url);
             string htmlContent = await GetHtmlContentByUrl(url);
 
@@ -51,8 +49,8 @@ namespace WhoScoredSpiderService
                 foreach (KeyValuePair<string, string> item in Globe.LeaguesDic)
                 {
                     string directory = Globe.RootDir + "\\" + item.Key + "\\";
-                    string fileName = directory + LeagueFileName;
-                    string htmlContent = LoadContent(fileName);
+                    string fileName = directory + Globe.LeagueFileName;
+                    string htmlContent = Globe.LoadFile(fileName);
 
                     List<int> originalMatchIDs = GetOriginalMatchIDs(directory);
                     List<int> matchIDs = filter.GetMatchIDs(htmlContent, originalMatchIDs);
@@ -70,6 +68,8 @@ namespace WhoScoredSpiderService
                 foreach (int id in matchIDs)
                 {
                     string url = Globe.WhoScoredMatchesUrl + id + @"/LiveStatistics";
+
+                    Globe.WriteLog("Downloading from url: " + url);
                     Task<string> getHtmlContentByUrl = GetHtmlContentByUrl(url);
                     string matchHtmlContent = await GetHtmlContentByUrl(url);
 
@@ -82,7 +82,6 @@ namespace WhoScoredSpiderService
         private async Task<string> GetHtmlContentByUrl(string url)
         {
             string htmlContent = "";
-            Globe.WriteLog("Downloading from url: " + url);
 
             try
             {
@@ -115,23 +114,6 @@ namespace WhoScoredSpiderService
             }
         }
 
-        private string LoadContent(string fileName)
-        {
-            string htmlContent = "";
-
-            try
-            {
-                StreamReader sr = new StreamReader(fileName, Encoding.Default);
-                htmlContent = sr.ReadToEnd();
-            }
-            catch (Exception ex)
-            {
-                Globe.WriteLog("SpiderAsync.LoadContent: " + ex.Message);
-            }
-
-            return htmlContent;
-        }
-
         private List<int> GetOriginalMatchIDs(string directory)
         {
             List<int> originalMatchIDs = new List<int>();
@@ -142,10 +124,10 @@ namespace WhoScoredSpiderService
             {
                 foreach (FileInfo file in fileInfos)
                 {
-                    if (file.FullName.Contains(LeagueFileName))
+                    if (file.FullName.Contains(Globe.LeagueFileName))
                         continue;
 
-                    if (file.Length < IncorrectFileSize)
+                    if (file.Length < Globe.IncorrectFileSize)
                     {
                         file.Delete();
                         continue;

@@ -2,34 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Threading;
 
-namespace ThreadLoad
+namespace WhoScoredSpiderService
 {
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            DirectoryInfo directory = new DirectoryInfo(Globe.RootDir);
-            DirectoryInfo[] leagueDir = directory.GetDirectories();
-            
-            foreach (DirectoryInfo league in leagueDir)
-            {
-                LoadMatch loadMatch = new LoadMatch(league.Name, league.FullName);
-                Thread leagueThread = new Thread(new ThreadStart(loadMatch.LoadFolder));
-                leagueThread.Start();
-            }
-
-            Console.ReadKey();
-        }
-    }
-
-    public class LoadMatch
+    class UpdateDataBase
     {
         private string LeagueName;
         private string LeagueDir;
 
-        public LoadMatch(string leagueName, string leagueDir)
+        public UpdateDataBase(string leagueName, string leagueDir)
         {
             this.LeagueName = leagueName;
             this.LeagueDir = leagueDir;
@@ -57,31 +38,14 @@ namespace ThreadLoad
                     if (fileName.Equals("LiveScores") || originalMatchIDs.Contains(int.Parse(fileName)))
                         continue;
 
-                    string htmlContent = LoadFile(file.FullName);
+                    string htmlContent = Globe.LoadFile(file.FullName);
 
                     ContentFilter filter = new ContentFilter();
                     MatchInfo matchInfo = filter.GetMatchInfo(int.Parse(fileName), LeagueName, htmlContent);
 
                     InsertData(matchInfo);
-                    Console.WriteLine(LeagueName + ": Match " + fileName + " Loading complete!");
                 }
-
-                Console.WriteLine(LeagueName + ": Complete!");
             }
-        }
-
-        private static string LoadFile(string fileName)
-        {
-            string htmlContent = "";
-
-            try
-            {
-                StreamReader sr = new StreamReader(fileName, Encoding.Default);
-                htmlContent = sr.ReadToEnd();
-            }
-            catch (Exception) { }
-
-            return htmlContent;
         }
 
         private void InsertData(MatchInfo matchInfo)

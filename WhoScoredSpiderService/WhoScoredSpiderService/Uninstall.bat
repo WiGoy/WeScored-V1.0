@@ -1,6 +1,6 @@
-e@echo off
+@echo off
 net stop "WhoScored Spider Service"
 echo 卸载程序开始
-echo 开始卸载 WhoScoredSpiderService.exe
+echo WhoScoredSpiderService 正在卸载......
 %windir%/Microsoft.NET/Framework64/v4.0.30319/InstallUtil.exe -u WhoScoredSpiderService.exe
-echo WhoScoredSpiderService.exe 卸载完成
+echo WhoScoredSpiderService 卸载完成
