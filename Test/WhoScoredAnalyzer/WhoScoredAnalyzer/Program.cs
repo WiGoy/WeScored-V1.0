@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WhoScoredAnalyzer
 {
@@ -10,6 +7,10 @@ namespace WhoScoredAnalyzer
     {
         static void Main(string[] args)
         {
+            DAL dal = new DAL();
+            dal.GetPlayerStatistics();
+
+            Console.ReadKey();
         }
     }
 }

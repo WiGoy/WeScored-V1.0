@@ -7,6 +7,13 @@ namespace WhoScoredAnalyzer
     {
     }
 
+    public class PlayerGoals
+    {
+        public int id;
+        public string name;
+        public double goals;
+    }
+
     #region 数据结构
     public class MatchInfo
     {
