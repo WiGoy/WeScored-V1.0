@@ -24,6 +24,9 @@ namespace WhoScoredSpiderService
         public static int WorkTime_Hour = 0;
         public static int WorkTime_Minute = 0;
 
+        public const string CONFIG_UPDATE_DB = "UpdateDB";
+        public static bool UpdateDBFlag = false;
+
         public const string CONFIG_LEAGUES = "Leagues";
         public static Dictionary<string, string> LeaguesDic = new Dictionary<string, string>();
 

@@ -10,6 +10,7 @@ namespace ThreadLoad
     {
         static void Main(string[] args)
         {
+            /*
             DirectoryInfo directory = new DirectoryInfo(Globe.RootDir);
             DirectoryInfo[] leagueDir = directory.GetDirectories();
             
@@ -19,6 +20,10 @@ namespace ThreadLoad
                 Thread leagueThread = new Thread(new ThreadStart(loadMatch.LoadFolder));
                 leagueThread.Start();
             }
+            */
+
+            DAL dal = new DAL();
+            dal.GetIncorrectMatchIDs();
 
             Console.ReadKey();
         }

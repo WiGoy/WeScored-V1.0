@@ -74,7 +74,24 @@ namespace WhoScoredSpiderService
                 {
                     Globe.WriteLog("Configuration.InitializeTime: " + ex.Message);
                 }
+            }
+        }
 
+        private void InitializeUpdateDBFlag()
+        {
+            if (Globe.ConfigDic.ContainsKey(Globe.CONFIG_UPDATE_DB))
+            {
+                string updateDBFlag = "";
+                Globe.ConfigDic.TryGetValue(Globe.CONFIG_UPDATE_DB, out updateDBFlag);
+
+                try
+                {
+                    Globe.UpdateDBFlag = bool.Parse(updateDBFlag);
+                }
+                catch (Exception ex)
+                {
+                	Globe.WriteLog("Configuration.InitializeUpdateDBFlag: " + ex.Message);
+                }
             }
         }
 

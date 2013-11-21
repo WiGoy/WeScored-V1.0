@@ -80,8 +80,8 @@ namespace WhoScoredSpiderService
                 }
             }
 
-            //  updating matches 10 minutes later
-            if (iHour == Globe.WorkTime_Hour && iMinute == Globe.WorkTime_Minute + 10)
+            //  updating matches to database 10 minutes later
+            if (Globe.UpdateDBFlag && (iHour == Globe.WorkTime_Hour && iMinute == Globe.WorkTime_Minute + 10))
             {
                 Globe.WriteLog("Begin updating matches...");
 

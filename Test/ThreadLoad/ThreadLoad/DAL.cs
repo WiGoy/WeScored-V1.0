@@ -53,5 +53,56 @@ namespace ThreadLoad
 
             return originalMatchIDs;
         }
+
+        public void GetIncorrectMatchIDs()
+        {
+            List<int> originalMatchIDs = new List<int>();
+            string strsql = "select match_id From MatchInformation";
+            DataSet ds = MySqlHelper.GetDataSet(MySqlHelper.Conn, CommandType.Text, strsql, null);
+            originalMatchIDs = (from r in ds.Tables[0].AsEnumerable() select r.Field<int>("match_id")).ToList();
+            List<int> originalMatchIDs1 = originalMatchIDs;
+
+            List<int> originalMatchIDs2 = new List<int>();
+            string strsql2 = "select match_id From TeamStatistics";
+            DataSet ds2 = MySqlHelper.GetDataSet(MySqlHelper.Conn, CommandType.Text, strsql2, null);
+            originalMatchIDs2 = (from r in ds.Tables[0].AsEnumerable() select r.Field<int>("match_id")).ToList();
+
+            for (int i = 0; i < originalMatchIDs2.Count; i++)
+            {
+                if (originalMatchIDs1.Contains(originalMatchIDs2[i]))
+                {
+                    originalMatchIDs1.Remove(originalMatchIDs2[i]);
+                }
+            }
+
+            Console.WriteLine("MatchID 1: " + originalMatchIDs1.Count);
+            Console.WriteLine("MatchID 2: " + originalMatchIDs2.Count);
+
+            Dictionary<int, int> dic = new Dictionary<int, int>(); 
+
+            for (int i = 0; i < originalMatchIDs2.Count; i++)
+            {
+                if (dic.ContainsKey(originalMatchIDs2[i]))
+                {
+                    dic.Remove(originalMatchIDs2[i]);
+                    dic.Add(originalMatchIDs2[i], 1);
+                }
+                else
+                    dic.Add(originalMatchIDs2[i], 0);
+            }
+
+            for (int i = 0; i < originalMatchIDs1.Count; i++)
+            {
+                Console.WriteLine("MatchID 1: " + originalMatchIDs1[i]);
+            }
+
+            foreach (KeyValuePair<int, int> obj in dic)
+            {
+                if (obj.Value == 1)
+                    Console.WriteLine("MatchID 2: " + obj.Key);
+            }
+
+            Console.WriteLine("Complete!");
+        }
     }
 }
