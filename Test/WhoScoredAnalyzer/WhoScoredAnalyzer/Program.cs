@@ -7,10 +7,16 @@ namespace WhoScoredAnalyzer
     {
         static void Main(string[] args)
         {
+            int homeTeamID = 41;
+            int awayTeamID = 134;
             DAL dal = new DAL();
-            dal.GetPlayerStatistics();
+            TeamStatistics_Preview homeTeam = dal.GetTeamStatistics(homeTeamID, true);
 
             Console.ReadKey();
+        }
+
+        private void MatchPreview(int homeTeamID, int awayTeamID)
+        {
         }
     }
 }

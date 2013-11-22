@@ -7,12 +7,123 @@ namespace WhoScoredAnalyzer
     {
     }
 
-    public class PlayerGoals
+    #region 数据结构（分析用）
+    public class TeamStatistics_Preview
     {
+        //  basic statistics
         public int id;
         public string name;
+        public string league;
+        public double rating;
+        public List<int> points;
+        
+        #region  Pass Statistics
+        public double total_pass;
+        public double accurate_pass;
+        
+        public double total_fwd_zone_pass;
+        public double accurate_fwd_zone_pass;
+        public double total_back_zone_pass;
+        public double accurate_back_zone_pass;
+
+        public double total_long_balls;
+        public double accurate_long_balls;
+        public double long_pass_own_to_opp;
+        public double long_pass_own_to_opp_success;
+
+        public double total_cross;
+        public double accurate_cross;
+
+        public double fwd_pass;
+        public double backward_pass;
+        public double leftside_pass;
+        public double rightside_pass;
+        public double passes_left;
+        public double passes_right;
+        #endregion
+
+        #region Attack Statistics
         public double goals;
+        public double first_half_goals;
+
+        public double att_ibox_goal;
+        public double att_obox_goal;
+        public double att_one_on_one;
+
+        public double forward_goals;
+        public double midfielder_goals;
+        public double defender_goals;
+
+        public double att_setpiece;
+        public double att_openplay;
+        public double goals_openplay;
+
+        public double total_att_assist;
+        public double goal_assist;
+        public double att_assist_setplay;
+        public double goal_assist_setplay;
+        public double att_assist_openplay;
+        public double goal_assist_openplay;
+
+        public double total_scoring_att;
+        public double ontarget_scoring_att;
+        public double shot_off_target;
+
+        public double big_chance_created;
+        public double big_chance_scored;
+        public double big_chance_missed;
+
+        public double total_fastbreak;
+        public double att_fastbreak;
+        public double shot_fastbreak;
+        public double goal_fastbreak;
+
+        public double total_offside;
+        #endregion
+
+        #region Defend Statistics
+        public double goals_conceded;
+        public double goals_conceded_ibox;
+        public double goals_conceded_obox;
+
+        public double saves;
+        public double diving_save;
+
+        public double interception;
+        public double interception_won;
+        public double interceptions_in_box;
+
+        public double total_tackle;
+        public double won_tackle;
+        public double tackle_lost;
+
+        public double ball_recovery;
+
+        public double total_clearance;
+        public double clean_sheet;
+
+        public double total_yel_card;
+        public double total_red_card;
+        #endregion
+
+        #region Ballcontrol Statistics
+        public double possession_percentage;
+
+        public double touches;
+        public double unsuccessful_touch;
+
+        public double total_contest;
+        public double won_contest;
+        public double dribble_lost;
+
+        public double fifty_fifty;
+        public double successful_fifty_fifty;
+
+        public double aerial_lost;
+        public double aerial_won;
+        #endregion
     }
+    #endregion
 
     #region 数据结构
     public class MatchInfo
