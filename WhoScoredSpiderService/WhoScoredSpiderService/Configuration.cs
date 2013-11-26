@@ -13,6 +13,7 @@ namespace WhoScoredSpiderService
             InitializeRootDir();
             InitializeTime();
             InitializeLeagues();
+            InitializeUpdateDBFlag();
         }
 
         private void ReadConfig()
@@ -86,7 +87,7 @@ namespace WhoScoredSpiderService
 
                 try
                 {
-                    Globe.UpdateDBFlag = bool.Parse(updateDBFlag);
+                    Globe.UpdateDBFlag = Convert.ToBoolean(int.Parse(updateDBFlag));
                 }
                 catch (Exception ex)
                 {
