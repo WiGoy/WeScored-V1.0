@@ -8,7 +8,19 @@ namespace WhoScoredAnalyzer
     }
 
     #region 数据结构（分析用）
-    public class TeamStatistics_Preview
+    public class Versus
+    {
+        public int HomeTeamID;
+        public int AwayTeamID;
+
+        public Versus(int homeTeamID, int awayTeamID)
+        {
+            HomeTeamID = homeTeamID;
+            AwayTeamID = awayTeamID;
+        }
+    }
+
+    public class TeamStatistics_Review
     {
         //  basic statistics
         public int id;
@@ -16,7 +28,7 @@ namespace WhoScoredAnalyzer
         public string league;
         public double rating;
         public List<int> points;
-        
+
         #region  Pass Statistics
         public double total_pass;
         public double accurate_pass;

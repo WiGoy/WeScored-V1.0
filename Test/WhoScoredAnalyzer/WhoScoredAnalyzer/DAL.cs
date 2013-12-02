@@ -21,29 +21,26 @@ namespace WhoScoredAnalyzer
 
         public void GetPlayerStatistics()
         {
-            string field = "rating";
-            string strsql = @"SELECT player_id, player_name, team_name, avg(" + field + @"), count(*) FROM `PlayerStatistics` WHERE (((league = 'Germany_Bundesliga') or (league = 'England_BarclaysPL') or (league = 'Spain_LigaBBVA') or (league = 'Italy_SerieA') or (league = 'France_Ligue1')) and (position = 'DL')) group by player_id ORDER BY avg(" + field + @") ASC";
+            string field = "won_contest";
+            string strsql = @"SELECT player_id, player_name, avg(" + field + @"), count(*) FROM `PlayerStatistics` WHERE (player_id = 9016)";
             DataSet ds = MySqlHelper.GetDataSet(MySqlHelper.Conn, CommandType.Text, strsql, null);
             
             var queryInfo = ds.Tables[0].AsEnumerable().Select(player => new
             {
                 id = player.Field<int>("player_id"),
                 name = player.Field<string>("player_name"),
-                team = player.Field<string>("team_name"),
-                value = player.Field<double>("avg(rating)"),
-                count = player.Field<long>("count(*)")
+                value = player.Field<double>("avg(won_contest)")
             });
             
             foreach (var productInfo in queryInfo)
             {
-                if (productInfo.count >= 4)
-                Console.WriteLine("Player: {0} Club: {1} " + field + ": {2} ", productInfo.name, productInfo.team, productInfo.value);
+                Console.WriteLine("Player: {0} " + field + ": {1} ", productInfo.name, productInfo.value);
             }
         }
 
-        public TeamStatistics_Preview GetTeamStatistics(int teamID)
+        public static TeamStatistics_Review GetTeamStatistics(int teamID)
         {
-            TeamStatistics_Preview team = new TeamStatistics_Preview();
+            TeamStatistics_Review team = new TeamStatistics_Review();
 
             string strsql = @"SELECT team_id, team_name, league, avg(rating), "
                 + @"avg(total_pass), avg(accurate_pass), "
@@ -154,8 +151,8 @@ namespace WhoScoredAnalyzer
                 }
             );
             #endregion
-
-            #region 用var数据生成TeamStatistics_Preview
+            
+            #region 用var数据生成TeamStatistics_Review
             foreach (var teamSta in teamStatistics)
             {
                 team.id = teamSta.id;
@@ -244,9 +241,9 @@ namespace WhoScoredAnalyzer
             return team;
         }
 
-        public TeamStatistics_Preview GetTeamStatistics(int teamID, int matchCount)
+        public static TeamStatistics_Review GetTeamStatistics(int teamID, int matchCount)
         {
-            TeamStatistics_Preview team = new TeamStatistics_Preview();
+            TeamStatistics_Review team = new TeamStatistics_Review();
 
             string strsql = @"SELECT team_id, team_name, league, avg(rating), "
                 + @"avg(total_pass), avg(accurate_pass), "
@@ -358,7 +355,7 @@ namespace WhoScoredAnalyzer
             );
             #endregion
 
-            #region 用var数据生成TeamStatistics_Preview
+            #region 用var数据生成TeamStatistics_Review
             foreach (var teamSta in teamStatistics)
             {
                 team.id = teamSta.id;
@@ -447,9 +444,9 @@ namespace WhoScoredAnalyzer
             return team;
         }
 
-        public TeamStatistics_Preview GetTeamStatistics(int teamID, bool home)
+        public static TeamStatistics_Review GetTeamStatistics(int teamID, bool home)
         {
-            TeamStatistics_Preview team = new TeamStatistics_Preview();
+            TeamStatistics_Review team = new TeamStatistics_Review();
 
             string strsql = @"SELECT team_id, team_name, league, avg(rating), "
                 + @"avg(total_pass), avg(accurate_pass), "
@@ -561,7 +558,7 @@ namespace WhoScoredAnalyzer
             );
             #endregion
 
-            #region 用var数据生成TeamStatistics_Preview
+            #region 用var数据生成TeamStatistics_Review
             foreach (var teamSta in teamStatistics)
             {
                 team.id = teamSta.id;
@@ -648,6 +645,96 @@ namespace WhoScoredAnalyzer
             #endregion
 
             return team;
+        }
+
+        public static List<int> GetTeamPointsHistory(int teamID)
+        {
+            List<int> pointsHistory = new List<int>();
+
+            string strsql = @"SELECT team_id, goals, goals_conceded FROM `TeamStatistics` WHERE (team_id = " + teamID + @") ORDER BY id DESC";
+            DataSet ds = MySqlHelper.GetDataSet(MySqlHelper.Conn, CommandType.Text, strsql, null);
+
+            var history = ds.Tables[0].AsEnumerable().Select(
+                result => new { goals = result.Field<float>("goals"), goals_conceded = result.Field<float>("goals_conceded") }
+                );
+
+            foreach (var his in history)
+            {
+                if (his.goals > his.goals_conceded)
+                {
+                    pointsHistory.Add(3);
+                }
+                else if (his.goals == his.goals_conceded)
+                {
+                    pointsHistory.Add(1);
+                }
+                else
+                {
+                    pointsHistory.Add(0);
+                }
+            }
+
+            return pointsHistory;
+        }
+
+        public static List<int> GetTeamPointsHistory(int teamID, int matchCount)
+        {
+            List<int> pointsHistory = new List<int>();
+
+            string strsql = @"SELECT team_id, goals, goals_conceded FROM `TeamStatistics` WHERE (team_id = " + teamID + @") ORDER BY id DESC LIMIT 0, " + matchCount;
+            DataSet ds = MySqlHelper.GetDataSet(MySqlHelper.Conn, CommandType.Text, strsql, null);
+
+            var history = ds.Tables[0].AsEnumerable().Select(
+                result => new { goals = result.Field<float>("goals"), goals_conceded = result.Field<float>("goals_conceded") }
+                );
+
+            foreach (var his in history)
+            {
+                if (his.goals > his.goals_conceded)
+                {
+                    pointsHistory.Add(3);
+                }
+                else if (his.goals == his.goals_conceded)
+                {
+                    pointsHistory.Add(1);
+                }
+                else
+                {
+                    pointsHistory.Add(0);
+                }
+            }
+
+            return pointsHistory;
+        }
+
+        public static List<int> GetTeamPointsHistory(int teamID, bool home)
+        {
+            List<int> pointsHistory = new List<int>();
+
+            string strsql = @"SELECT team_id, goals, goals_conceded FROM `TeamStatistics` WHERE ((team_id = " + teamID + @") and (home = " + home + ")) ORDER BY id DESC";
+            DataSet ds = MySqlHelper.GetDataSet(MySqlHelper.Conn, CommandType.Text, strsql, null);
+
+            var history = ds.Tables[0].AsEnumerable().Select(
+                result => new { goals = result.Field<float>("goals"), goals_conceded = result.Field<float>("goals_conceded") }
+                );
+
+            foreach (var his in history)
+            {
+                if (his.goals > his.goals_conceded)
+                {
+                    pointsHistory.Add(3);
+                }
+                else if (his.goals == his.goals_conceded)
+                {
+                    pointsHistory.Add(1);
+                }
+                else
+                {
+                    pointsHistory.Add(0);
+                }
+            }
+
+            return pointsHistory;
         }
     }
 }
