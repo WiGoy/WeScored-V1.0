@@ -186,6 +186,7 @@ namespace WhoScoredAnalyzer
         public float att_cmiss_left;
         public float att_cmiss_right;
         public float att_fastbreak;
+        public float att_freekick_goal;
         public float att_freekick_miss;
         public float att_freekick_post;
         public float att_freekick_target;
@@ -412,6 +413,7 @@ namespace WhoScoredAnalyzer
         public float att_cmiss_left;
         public float att_cmiss_right;
         public float att_fastbreak;
+        public float att_freekick_goal;
         public float att_freekick_miss;
         public float att_freekick_post;
         public float att_freekick_target;
@@ -716,6 +718,7 @@ namespace WhoScoredAnalyzer
         public const string ATT_CMISS_LEFT = "att_cmiss_left";
         public const string ATT_CMISS_RIGHT = "att_cmiss_right";
         public const string ATT_FASTBREAK = "att_fastbreak";
+        public const string ATT_FREEKICK_GOAL = "att_freekick_goal";
         public const string ATT_FREEKICK_MISS = "att_freekick_miss";
         public const string ATT_FREEKICK_POST = "att_freekick_post";
         public const string ATT_FREEKICK_TARGET = "att_freekick_target";
@@ -940,6 +943,7 @@ namespace WhoScoredAnalyzer
         public const string ATT_CMISS_LEFT = "att_cmiss_left";
         public const string ATT_CMISS_RIGHT = "att_cmiss_right";
         public const string ATT_FASTBREAK = "att_fastbreak";
+        public const string ATT_FREEKICK_GOAL = "att_freekick_goal";
         public const string ATT_FREEKICK_MISS = "att_freekick_miss";
         public const string ATT_FREEKICK_POST = "att_freekick_post";
         public const string ATT_FREEKICK_TARGET = "att_freekick_target";

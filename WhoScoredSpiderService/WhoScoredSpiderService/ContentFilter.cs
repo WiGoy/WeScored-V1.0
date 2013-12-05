@@ -129,6 +129,7 @@ namespace WhoScoredSpiderService
             team.att_cmiss_left = float.Parse(GetStatistics(teamContent, TeamStatisticsFilter.ATT_CMISS_LEFT));
             team.att_cmiss_right = float.Parse(GetStatistics(teamContent, TeamStatisticsFilter.ATT_CMISS_RIGHT));
             team.att_fastbreak = float.Parse(GetStatistics(teamContent, TeamStatisticsFilter.ATT_FASTBREAK));
+            team.att_freekick_goal = float.Parse(GetStatistics(teamContent, TeamStatisticsFilter.ATT_FREEKICK_GOAL));
             team.att_freekick_miss = float.Parse(GetStatistics(teamContent, TeamStatisticsFilter.ATT_FREEKICK_MISS));
             team.att_freekick_post = float.Parse(GetStatistics(teamContent, TeamStatisticsFilter.ATT_FREEKICK_POST));
             team.att_freekick_target = float.Parse(GetStatistics(teamContent, TeamStatisticsFilter.ATT_FREEKICK_TARGET));
@@ -394,6 +395,7 @@ namespace WhoScoredSpiderService
             player.att_cmiss_left = float.Parse(GetStatistics(playerContent, PlayerStatisticsFilter.ATT_CMISS_LEFT));
             player.att_cmiss_right = float.Parse(GetStatistics(playerContent, PlayerStatisticsFilter.ATT_CMISS_RIGHT));
             player.att_fastbreak = float.Parse(GetStatistics(playerContent, PlayerStatisticsFilter.ATT_FASTBREAK));
+            player.att_freekick_goal = float.Parse(GetStatistics(playerContent, PlayerStatisticsFilter.ATT_FREEKICK_GOAL));
             player.att_freekick_miss = float.Parse(GetStatistics(playerContent, PlayerStatisticsFilter.ATT_FREEKICK_MISS));
             player.att_freekick_post = float.Parse(GetStatistics(playerContent, PlayerStatisticsFilter.ATT_FREEKICK_POST));
             player.att_freekick_target = float.Parse(GetStatistics(playerContent, PlayerStatisticsFilter.ATT_FREEKICK_TARGET));

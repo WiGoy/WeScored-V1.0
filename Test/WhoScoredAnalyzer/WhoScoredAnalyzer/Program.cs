@@ -9,6 +9,9 @@ namespace WhoScoredAnalyzer
     {
         static void Main(string[] args)
         {
+            DAL dal = new DAL();
+            dal.GetPlayerStatistics();
+            /*
             List<Versus> matchPreview = new List<Versus>();
             matchPreview.Add(new Versus(560, 63));
             matchPreview.Add(new Versus(44, 276));
@@ -27,7 +30,7 @@ namespace WhoScoredAnalyzer
 
                 PrintPreview(homeTeam, awayTeam);
             }
-            
+            */
             Console.ReadKey();
         }
 

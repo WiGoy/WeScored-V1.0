@@ -21,20 +21,21 @@ namespace WhoScoredAnalyzer
 
         public void GetPlayerStatistics()
         {
-            string field = "won_contest";
-            string strsql = @"SELECT player_id, player_name, avg(" + field + @"), count(*) FROM `PlayerStatistics` WHERE (player_id = 9016)";
+            string field = "att_freekick_goal";
+            string strsql = @"SELECT player_id, player_name, sum(binary " + field + @"), sum(binary att_freekick_total) FROM `PlayerStatistics` WHERE ((league = 'Brazil_LigaDoBrasil') or (league = 'England_BarclaysPL') or (league = 'England_FLChampionship') or (league = 'France_Ligue1') or (league = 'Germany_Bundesliga') or (league = 'Italy_SerieA') or (league = 'Netherlands_Eredivisie') or (league = 'Russia_RussianLeague') or (league = 'Spain_LigaBBVA') or (league = 'USA_MLS')) group by player_id ORDER by sum(binary " + field + @")";
             DataSet ds = MySqlHelper.GetDataSet(MySqlHelper.Conn, CommandType.Text, strsql, null);
             
             var queryInfo = ds.Tables[0].AsEnumerable().Select(player => new
             {
                 id = player.Field<int>("player_id"),
                 name = player.Field<string>("player_name"),
-                value = player.Field<double>("avg(won_contest)")
+                freekick_goal = player.Field<object>("sum(binary att_freekick_goal)"),
+                freekick_total = player.Field<object>("sum(binary att_freekick_total)")
             });
             
-            foreach (var productInfo in queryInfo)
+            foreach (var playerInfo in queryInfo)
             {
-                Console.WriteLine("Player: {0} " + field + ": {1} ", productInfo.name, productInfo.value);
+                Console.WriteLine("Player: {0} " + field + ": {1} / {2} ", playerInfo.name, playerInfo.freekick_goal, playerInfo.freekick_total);
             }
         }
 
