@@ -16,6 +16,12 @@ namespace WhoScoredReader
 
         static void Main(string[] args)
         {
+            string fileName = @"E:\WhoScored\htmlContent\England_BarclaysPL\719854.txt";
+            string leagueName = "England_BarclaysPL";
+            ContentFilter filter = new ContentFilter();
+            string htmlContent = LoadFile(fileName);
+            MatchInfo matchInfo = filter.GetMatchInfo(719854, leagueName, htmlContent);
+            /*
             string leagueName = "Italy_SerieA";
             string dir = Globe.RootDir + leagueName + @"\";
 
@@ -42,7 +48,7 @@ namespace WhoScoredReader
                     DAL dal = new DAL();
                     dal.InsertData(matchInfo);
                 }
-            }
+            }*/
 
             Console.WriteLine("End!");
             Console.ReadKey();
